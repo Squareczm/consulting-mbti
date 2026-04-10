@@ -1,6 +1,108 @@
 // ============================================
-// CBTI — 管理咨询顾问人格测试
+// CBTI — 管理咨询顾问人格测试 (CN/EN)
 // ============================================
+
+// ============ i18n ============
+var lang = 'zh';
+
+var UI = {
+  zh: {
+    title: 'CBTI',
+    subtitle: 'Consultant Behavior Type Indicator',
+    tagline: '一个不太正经的管理咨询顾问性格测试',
+    desc: '30 道题 · 16 种顾问人格 · 找到你的甲方克星',
+    startBtn: '进场',
+    disclaimer: '纯属娱乐，升职加薪请看 360 反馈',
+    calcMsgs: ['正在分析你的咨询灵魂...', '检测PPT产能...', '评估客户关系倾向...', '计算内卷指数...', '匹配咨询人格...'],
+    resultBadge: '你的咨询人格',
+    saveBtn: '保存结果图片',
+    copyBtn: '复制链接分享',
+    retakeBtn: '再测一次',
+    footerLine1: 'CBTI · Consultant Behavior Type Indicator',
+    footerLine2: '纯属娱乐，升职加薪请看 360 反馈',
+    toastCopy: '链接已复制，发给你的同事互相伤害吧',
+    toastSave: '结果图片已保存',
+    qrHint: '扫码测试你的咨询人格',
+    imgTitle: 'CBTI · 管理咨询顾问人格测试',
+    shareTitle: '我的咨询人格：',
+    dims: [
+      { label: '输出偏好', left: 'PPT至上', right: '数据至上' },
+      { label: '工作节奏', left: '佛系', right: '卷王' },
+      { label: '协作倾向', left: '群狼', right: '独狼' },
+      { label: '江湖段位', left: '萌新', right: '老法师' }
+    ],
+    depthLabels: [
+      [0, '📋 实习生'], [5, '💼 分析师'], [10, '📊 高级分析师'],
+      [15, '🎯 经理'], [20, '🏆 高级经理'],
+      [25, '👔 总监'], [28, '💎 副合伙人'], [30, '👑 合伙人']
+    ]
+  },
+  en: {
+    title: 'CBTI',
+    subtitle: 'Consultant Behavior Type Indicator',
+    tagline: 'A brutally honest management consultant personality test',
+    desc: '30 questions · 16 consultant archetypes · find your inner PowerPoint warrior',
+    startBtn: 'Enter',
+    disclaimer: 'For entertainment only. For promotions, see your 360 review.',
+    calcMsgs: ['Analyzing your consulting soul...', 'Measuring slide output...', 'Evaluating client rapport...', 'Calculating hustle index...', 'Matching consultant archetype...'],
+    resultBadge: 'Your Consultant Type',
+    saveBtn: 'Save Result Image',
+    copyBtn: 'Copy Link to Share',
+    retakeBtn: 'Take Again',
+    footerLine1: 'CBTI · Consultant Behavior Type Indicator',
+    footerLine2: 'For entertainment only. For promotions, see your 360 review.',
+    toastCopy: 'Link copied. Go roast your colleagues.',
+    toastSave: 'Result image saved',
+    qrHint: 'Scan to discover your consultant type',
+    imgTitle: 'CBTI · Consultant Personality Test',
+    shareTitle: 'My consultant type: ',
+    dims: [
+      { label: 'Output Style', left: 'Slides First', right: 'Data First' },
+      { label: 'Work Pace', left: 'Chill', right: 'Hustler' },
+      { label: 'Collaboration', left: 'Pack', right: 'Lone Wolf' },
+      { label: 'Seniority', left: 'Rookie', right: 'Veteran' }
+    ],
+    depthLabels: [
+      [0, '📋 Intern'], [5, '💼 Analyst'], [10, '📊 Sr. Analyst'],
+      [15, '🎯 Manager'], [20, '🏆 Sr. Manager'],
+      [25, '👔 Director'], [28, '💎 Vice Partner'], [30, '👑 Partner']
+    ]
+  }
+};
+
+function u() { return UI[lang]; }
+
+function switchLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  var btn = document.getElementById('lang-toggle');
+  if (btn) btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  updateLandingText();
+
+  // If on quiz screen, re-render current question
+  var quizScreen = document.getElementById('screen-quiz');
+  if (quizScreen.classList.contains('active')) {
+    renderQuestion();
+  }
+
+  // If on result screen, re-render result
+  var resultScreen = document.getElementById('screen-result');
+  if (resultScreen.classList.contains('active')) {
+    showResult();
+  }
+}
+
+function updateLandingText() {
+  var ui = u();
+  var el;
+  el = document.querySelector('.tagline');
+  if (el) el.textContent = ui.tagline;
+  el = document.querySelector('.desc');
+  if (el) el.textContent = ui.desc;
+  el = document.querySelector('.btn-primary span');
+  if (el) el.textContent = ui.startBtn;
+  el = document.querySelector('.disclaimer');
+  if (el) el.textContent = ui.disclaimer;
+}
 
 // ============ 浮动金币背景 ============
 (function initBubbles() {
@@ -65,17 +167,12 @@ var scores = { depth: 0, action: 0, social: 0, exp: 0 };
 var isTransitioning = false;
 
 // ============ Rank labels ============
-var depthLabels = [
-  [0, '📋 实习生'], [5, '💼 分析师'], [10, '📊 高级分析师'],
-  [15, '🎯 经理'], [20, '🏆 高级经理'],
-  [25, '👔 总监'], [28, '💎 副合伙人'], [30, '👑 合伙人']
-];
-
 function getDepthLabel(n) {
-  for (var i = depthLabels.length - 1; i >= 0; i--) {
-    if (n >= depthLabels[i][0]) return depthLabels[i][1];
+  var labels = u().depthLabels;
+  for (var i = labels.length - 1; i >= 0; i--) {
+    if (n >= labels[i][0]) return labels[i][1];
   }
-  return depthLabels[0][1];
+  return labels[0][1];
 }
 
 // ============ Screen ============
@@ -101,7 +198,8 @@ function renderQuestion() {
   }
 
   var q = QUESTIONS[currentQuestion];
-  document.getElementById('question-text').textContent = q.text;
+  var isEn = lang === 'en';
+  document.getElementById('question-text').textContent = isEn && q.text_en ? q.text_en : q.text;
   document.getElementById('progress-fill').style.width = ((currentQuestion / QUESTIONS.length) * 100) + '%';
   document.getElementById('question-num').textContent = currentQuestion + 1;
   document.getElementById('depth-indicator').textContent = getDepthLabel(currentQuestion);
@@ -114,7 +212,8 @@ function renderQuestion() {
     (function(idx) {
       var btn = document.createElement('button');
       btn.className = 'option-btn';
-      btn.textContent = q.options[idx].text;
+      var opt = q.options[idx];
+      btn.textContent = isEn && opt.text_en ? opt.text_en : opt.text;
       btn.onclick = function() { selectOption(idx); };
       container.appendChild(btn);
     })(i);
@@ -171,8 +270,9 @@ function showCalculating() {
 
   var depthEl = document.querySelector('.depth-num');
   var textEl = document.getElementById('calc-text');
-  var msgs = ['正在分析你的咨询灵魂...', '检测PPT产能...', '评估客户关系倾向...', '计算内卷指数...', '匹配咨询人格...'];
+  var msgs = u().calcMsgs;
   var depth = 0, mi = 0;
+  textEl.textContent = msgs[0];
 
   var di = setInterval(function() {
     depth += 3;
@@ -200,19 +300,49 @@ function calculateType() {
        + (scores.exp > 0 ? 'V' : 'N');
 }
 
+// ============ Helpers for i18n type fields ============
+function typeName(type) {
+  return lang === 'en' && type.name_en ? type.name_en : type.name;
+}
+function typeTagline(type) {
+  return lang === 'en' && type.tagline_en ? type.tagline_en : type.tagline;
+}
+function typeDesc(type) {
+  return lang === 'en' && type.description_en ? type.description_en : type.description;
+}
+
+// ============ Dims helper ============
+function getDims() {
+  var ui = u();
+  var dimDefs = ui.dims;
+  var colors = ['#c49a2a', '#b03a3a', '#2d7d9a', '#6c5ce7'];
+  var lks = ['S', 'C', 'G', 'N'];
+  var rks = ['D', 'A', 'L', 'V'];
+  var vals = [scores.depth, scores.action, scores.social, scores.exp];
+  var result = [];
+  for (var i = 0; i < 4; i++) {
+    result.push({
+      label: dimDefs[i].label,
+      left: dimDefs[i].left,
+      right: dimDefs[i].right,
+      lk: lks[i],
+      rk: rks[i],
+      val: vals[i],
+      color: colors[i]
+    });
+  }
+  return result;
+}
+
 // ============ Result ============
 function showResult() {
+  var ui = u();
   var typeCode = calculateType();
   var type = CONSULTANT_TYPES[typeCode];
   if (!type) { console.error('Type not found:', typeCode); return; }
 
   var maxScore = 20;
-  var dims = [
-    { label: '输出偏好', left: 'PPT至上', right: '数据至上', lk: 'S', rk: 'D', val: scores.depth, color: '#c49a2a' },
-    { label: '工作节奏', left: '佛系', right: '卷王', lk: 'C', rk: 'A', val: scores.action, color: '#b03a3a' },
-    { label: '协作倾向', left: '群狼', right: '独狼', lk: 'G', rk: 'L', val: scores.social, color: '#2d7d9a' },
-    { label: '江湖段位', left: '萌新', right: '老法师', lk: 'N', rk: 'V', val: scores.exp, color: '#6c5ce7' }
-  ];
+  var dims = getDims();
 
   var dimHtml = dims.map(function(d) {
     var pct = Math.min(100, Math.max(0, (d.val / maxScore + 0.5) * 100));
@@ -222,30 +352,31 @@ function showResult() {
       + '<div class="dim-bar"><div class="dim-bar-fill" style="width:' + pct + '%;background:' + d.color + '"></div></div></div>';
   }).join('');
 
-  var descHtml = type.description.map(function(p) { return '<p>' + p + '</p>'; }).join('');
+  var desc = typeDesc(type);
+  var descHtml = desc.map(function(p) { return '<p>' + p + '</p>'; }).join('');
 
   document.getElementById('result-content').innerHTML =
     '<div class="result-header">'
-    + '<div class="result-type-badge">你的咨询人格</div>'
+    + '<div class="result-type-badge">' + ui.resultBadge + '</div>'
     + '<div class="result-emoji">' + type.emoji + '</div>'
     + '<div class="result-code" style="color:' + type.color + '">' + type.code + '</div>'
-    + '<div class="result-name">' + type.name + '</div>'
-    + '<div class="result-tagline">"' + type.tagline + '"</div>'
+    + '<div class="result-name">' + typeName(type) + '</div>'
+    + '<div class="result-tagline">"' + typeTagline(type) + '"</div>'
     + '</div>'
     + '<div class="result-dimensions">' + dimHtml + '</div>'
     + '<div class="result-description"><div class="result-desc-card">' + descHtml + '</div></div>'
     + '<div class="result-actions">'
     + '<button class="btn-share" onclick="saveResultImage()">'
     + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
-    + '保存结果图片</button>'
+    + ui.saveBtn + '</button>'
     + '<button class="btn-secondary" onclick="copyLink()">'
     + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
-    + '复制链接分享</button>'
+    + ui.copyBtn + '</button>'
     + '<button class="btn-secondary" onclick="retakeQuiz()">'
     + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>'
-    + '再测一次</button>'
+    + ui.retakeBtn + '</button>'
     + '</div>'
-    + '<div class="result-footer"><p>CBTI · Consultant Behavior Type Indicator</p><p>纯属娱乐，升职加薪请看 360 反馈</p></div>';
+    + '<div class="result-footer"><p>' + ui.footerLine1 + '</p><p>' + ui.footerLine2 + '</p></div>';
 
   showScreen('screen-result');
 
@@ -257,8 +388,28 @@ function showResult() {
 // ============ Save result image ============
 
 function getTextLines(ctx, text, maxWidth) {
-  var lines = [], line = '';
-  for (var i = 0; i < text.length; i++) {
+  var words, lines, line, testLine, i;
+  // For English, split by word; for Chinese, split by character
+  if (lang === 'en') {
+    words = text.split(' ');
+    lines = [];
+    line = '';
+    for (i = 0; i < words.length; i++) {
+      testLine = line ? line + ' ' + words[i] : words[i];
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        lines.push(line);
+        line = words[i];
+      } else {
+        line = testLine;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  // Chinese: character by character
+  lines = [];
+  line = '';
+  for (i = 0; i < text.length; i++) {
     var t = line + text[i];
     if (ctx.measureText(t).width > maxWidth && line) {
       lines.push(line);
@@ -310,6 +461,7 @@ function drawQR(ctx, url, x, y, size) {
 }
 
 function saveResultImage() {
+  var ui = u();
   var typeCode = calculateType();
   var type = CONSULTANT_TYPES[typeCode];
   var dpr = 2;
@@ -318,25 +470,21 @@ function saveResultImage() {
   var contentW = W - pad * 2;
   var maxScore = 20;
 
-  var dims = [
-    { label: '输出偏好', left: 'PPT至上', right: '数据至上', lk: 'S', rk: 'D', val: scores.depth, color: '#c49a2a' },
-    { label: '工作节奏', left: '佛系', right: '卷王', lk: 'C', rk: 'A', val: scores.action, color: '#b03a3a' },
-    { label: '协作倾向', left: '群狼', right: '独狼', lk: 'G', rk: 'L', val: scores.social, color: '#2d7d9a' },
-    { label: '江湖段位', left: '萌新', right: '老法师', lk: 'N', rk: 'V', val: scores.exp, color: '#6c5ce7' }
-  ];
+  var dims = getDims();
 
+  var desc = typeDesc(type);
   var measure = document.createElement('canvas').getContext('2d');
   var descLineH = 20;
   var descFont = '13px sans-serif';
   measure.font = descFont;
   var totalDescLines = 0;
   var descLinesArr = [];
-  for (var i = 0; i < type.description.length; i++) {
-    var lines = getTextLines(measure, type.description[i], contentW);
+  for (var i = 0; i < desc.length; i++) {
+    var lines = getTextLines(measure, desc[i], contentW);
     descLinesArr.push(lines);
     totalDescLines += lines.length;
   }
-  var descGaps = (type.description.length - 1) * 10;
+  var descGaps = (desc.length - 1) * 10;
 
   var headerH = 260;
   var dimBlockH = dims.length * 52 + 16;
@@ -366,7 +514,7 @@ function saveResultImage() {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#8a8f9f';
   ctx.font = '13px sans-serif';
-  ctx.fillText('CBTI · 管理咨询顾问人格测试', W/2, y);
+  ctx.fillText(ui.imgTitle, W/2, y);
   y += 65;
 
   ctx.font = '56px sans-serif';
@@ -380,12 +528,12 @@ function saveResultImage() {
 
   ctx.fillStyle = '#1a1f36';
   ctx.font = 'bold 24px sans-serif';
-  ctx.fillText(type.name, W/2, y);
+  ctx.fillText(typeName(type), W/2, y);
   y += 30;
 
   ctx.fillStyle = '#8a8f9f';
   ctx.font = '14px sans-serif';
-  ctx.fillText('"' + type.tagline + '"', W/2, y);
+  ctx.fillText('"' + typeTagline(type) + '"', W/2, y);
   y += 25;
 
   ctx.strokeStyle = 'rgba(26,31,54,0.08)';
@@ -465,13 +613,13 @@ function saveResultImage() {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#8a8f9f';
   ctx.font = '11px sans-serif';
-  ctx.fillText('扫码测试你的咨询人格', W/2, y);
+  ctx.fillText(ui.qrHint, W/2, y);
 
   canvas.toBlob(function(blob) {
     if (!blob) return;
     if (navigator.share && navigator.canShare) {
       var file = new File([blob], 'CBTI-' + typeCode + '.png', {type:'image/png'});
-      var data = {files:[file], title:'我的咨询人格：' + type.name};
+      var data = {files:[file], title: ui.shareTitle + typeName(type)};
       if (navigator.canShare(data)) {
         navigator.share(data).catch(function() { downloadBlob(blob, typeCode); });
         return;
@@ -490,7 +638,7 @@ function downloadBlob(blob, code) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('结果图片已保存');
+  showToast(u().toastSave);
 }
 
 // ============ Share ============
@@ -498,7 +646,7 @@ function copyLink() {
   var url = window.location.href;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(function() {
-      showToast('链接已复制，发给你的同事互相伤害吧');
+      showToast(u().toastCopy);
     }).catch(function() { fallbackCopy(url); });
   } else {
     fallbackCopy(url);
@@ -513,13 +661,14 @@ function fallbackCopy(url) {
   input.select();
   document.execCommand('copy');
   document.body.removeChild(input);
-  showToast('链接已复制，发给你的同事互相伤害吧');
+  showToast(u().toastCopy);
 }
 
 function retakeQuiz() {
   var url = new URL(window.location);
   url.searchParams.delete('r');
   window.history.replaceState({}, '', url);
+  updateLandingText();
   showScreen('screen-landing');
 }
 

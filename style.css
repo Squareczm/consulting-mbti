@@ -36,6 +36,31 @@ body {
   overflow: hidden;
 }
 
+/* ============ Language Toggle ============ */
+.lang-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 99;
+  padding: 6px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  letter-spacing: 0.5px;
+}
+
+.lang-toggle:hover {
+  background: var(--biz-soft);
+  border-color: rgba(196,154,42,0.2);
+  color: var(--text-1);
+}
+
 /* ============ Bubble Canvas ============ */
 #bubble-canvas {
   position: fixed;
